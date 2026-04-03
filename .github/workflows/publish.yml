@@ -19,7 +19,7 @@ jobs:
       id-token: write
     environment:
       name: npm
-      url: https://www.npmjs.com/package/mtmauto
+      url: https://www.npmjs.com/package/@mattwin/mtmauto
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -129,7 +129,7 @@ jobs:
       id-token: write
     environment:
       name: npm-preview
-      url: https://www.npmjs.com/package/mtmauto
+      url: https://www.npmjs.com/package/@mattwin/mtmauto
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4

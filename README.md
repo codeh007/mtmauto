@@ -7,23 +7,26 @@
 ## 安装与运行
 
 ```bash
-npm install -g mtmauto
+npm install -g @mattwin/mtmauto
 mtmauto --help
 ```
 
 或直接使用：
 
 ```bash
-npx mtmauto --help
+npx @mattwin/mtmauto --help
 ```
 
 ## CLI 约定
 
+- 包名：`@mattwin/mtmauto`
+- 可执行 bin：`mtmauto`
 - 根命令 `mtmauto`：只显示帮助，不会默认执行业务流
 - 查看版本：`mtmauto --version`
 - 执行红果流程：
   - `mtmauto hongguo`
   - `mtmauto hongguo run`
+  - `npx @mattwin/mtmauto hongguo run`
 
 ## 环境变量加载规则
 

@@ -1,5 +1,5 @@
 {
-  "name": "mtmauto",
+  "name": "@mattwin/mtmauto",
   "version": "0.0.2",
   "description": "CLI demo for running Midscene-based Android cloud-phone automation flows.",
   "type": "module",
