@@ -1,4 +1,4 @@
-# @codeh007/mtmauto
+# codeh007-mtmauto
 
 用于快速验证 Midscene + Android 云手机自动化链路的最小独立演示项目。
 
@@ -15,14 +15,14 @@
 ### 使用 npm 安装
 
 ```bash
-npm install -g @codeh007/mtmauto
+npm install -g codeh007-mtmauto
 mtm-auto
 ```
 
 或直接执行：
 
 ```bash
-npx @codeh007/mtmauto
+npx codeh007-mtmauto
 ```
 
 ## 启动
@@ -85,14 +85,14 @@ VMOS_REMOTE_ADB_PORT=
 
 根据 npm 官方文档，优先使用 GitHub Actions OIDC trusted publishing，而不是长期有效的 `NPM_TOKEN`。
 
-你需要由人类搭档在 npm 网站完成一次性配置：
+如果后续要切换到 trusted publishing，你需要在 npm 网站完成一次性配置：
 
-1. 确认 `@codeh007/mtmauto` 是你最终要公开发布的 npm 包名
+1. 确认 `codeh007-mtmauto` 是你最终要公开发布的 npm 包名
 2. 在 npm 包设置里把 trusted publisher 指向：
    - GitHub user/org: `codeh007`
    - Repository: `mtmauto`
    - Workflow filename: `publish.yml`
-3. 首次跑通后，可在 npm 包设置里进一步限制传统 token 发布权限
+3. 跑通后，可在 npm 包设置里进一步限制传统 token 发布权限
 
 ### 兼容方案：NPM_TOKEN
 
@@ -100,15 +100,15 @@ VMOS_REMOTE_ADB_PORT=
 
 ### 发布开关
 
-为了避免在 npm 首发权限尚未就绪时让 `main` 分支持续报红，`publish.yml` 现在额外受仓库变量 `NPM_PUBLISH_ENABLED` 控制：
+`publish.yml` 额外受仓库变量 `NPM_PUBLISH_ENABLED` 控制：
 
-- 未设置或不等于 `true`：`Publish` job 会自动跳过
-- 设置为 `true`：后续 `main` 分支 push 会自动进入发布流程
+- 变量不等于 `true`：`Publish` job 会自动跳过
+- 变量等于 `true`：后续 `main` 分支 push 会自动进入发布流程
 
-建议顺序：
+当前建议：
 
-1. 由 npm 账号持有人准备好可首发 `@codeh007/mtmauto` 的凭据，或先完成一次人工首发
-2. 在 GitHub 仓库变量中设置 `NPM_PUBLISH_ENABLED=true`
+1. 保持 GitHub 仓库变量 `NPM_PUBLISH_ENABLED=true`
+2. 保持仓库 `NPM_TOKEN` secret 可用，或后续迁移到 trusted publishing
 3. 之后主分支每次版本变更/代码更新都会自动发布
 
 ### 自动版本策略
