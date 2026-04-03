@@ -1,17 +1,7 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
-import { fileURLToPath } from 'node:url';
 import { config as loadDotenv } from 'dotenv';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export const projectDir = path.resolve(__dirname, '../..');
-
-const defaultEnvFile = path.join(projectDir, '.env');
-const localEnvFile = path.join(projectDir, '.env.local');
-const legacyEnvFile = path.join(projectDir, 'env/dev.env');
 
 export interface VmosConfig {
   sshUser: string;
@@ -82,7 +72,24 @@ export const HONGGUO_DEMO = {
   ].join(' '),
 } as const;
 
-export function loadRuntimeEnv() {
+export interface RuntimeEnvLoadOptions {
+  cwd?: string;
+  envFile?: string;
+}
+
+function resolveCallerCwd(cwd: string) {
+  return path.resolve(cwd);
+}
+
+function resolveEnvFilePath(envFile: string, cwd: string) {
+  return path.isAbsolute(envFile) ? envFile : path.resolve(cwd, envFile);
+}
+
+function applyDefaultEnvFiles(cwd: string) {
+  const defaultEnvFile = path.join(cwd, '.env');
+  const localEnvFile = path.join(cwd, '.env.local');
+  const legacyEnvFile = path.join(cwd, 'env/dev.env');
+
   if (existsSync(defaultEnvFile)) {
     loadDotenv({ path: defaultEnvFile });
   } else if (existsSync(legacyEnvFile)) {
@@ -91,6 +98,21 @@ export function loadRuntimeEnv() {
 
   if (existsSync(localEnvFile)) {
     loadDotenv({ path: localEnvFile, override: true });
+  }
+}
+
+export function loadRuntimeEnv(options: RuntimeEnvLoadOptions = {}) {
+  const cwd = resolveCallerCwd(options.cwd ?? process.cwd());
+
+  if (options.envFile) {
+    const envFilePath = resolveEnvFilePath(options.envFile, cwd);
+    if (!existsSync(envFilePath)) {
+      throw new Error(`指定的环境变量文件不存在: ${envFilePath}`);
+    }
+
+    loadDotenv({ path: envFilePath });
+  } else {
+    applyDefaultEnvFiles(cwd);
   }
 
   process.env.MIDSCENE_MODEL_FAMILY ||= 'gpt-5';

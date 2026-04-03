@@ -24,7 +24,7 @@ export function assertMidsceneEnv() {
   const missingKeys = requiredKeys.filter((key) => !process.env[key]);
   if (missingKeys.length > 0) {
     throw new Error(
-      `缺少 Midscene 模型环境变量: ${missingKeys.join(', ')}。请确认已在项目根目录的 .env / .env.local（或兼容旧结构的 env/dev.env）中完成配置。`,
+      `缺少 Midscene 模型环境变量: ${missingKeys.join(', ')}。请确认已在当前工作目录的 .env / .env.local（或兼容旧结构的 env/dev.env）中完成配置，或通过 --env-file 指定配置文件。`,
     );
   }
 }
@@ -38,7 +38,7 @@ export async function queryVisibleTexts(agent: AndroidAgent, description: string
     ? result.filter((item) => typeof item === 'string' && item.trim().length > 0)
     : [];
 
-  console.log(`[mtm-auto] ${description}:`, texts);
+  console.log(`[mtmauto] ${description}:`, texts);
   return texts;
 }
 
@@ -108,8 +108,8 @@ export async function runHongguoTaskFlow(agent: AndroidAgent) {
   const foregroundState = await readForegroundState();
   const outcome = classifyDemoOutcome(resultTexts, foregroundState);
 
-  console.log('[mtm-auto] 前台状态:', foregroundState);
-  console.log('[mtm-auto] 演示结果:', outcome);
+  console.log('[mtmauto] 前台状态:', foregroundState);
+  console.log('[mtmauto] 演示结果:', outcome);
 
   if (outcome === 'unknown_reward_state') {
     throw new Error('红果任务流执行后未能确认当前是否仍处于有效业务链路');

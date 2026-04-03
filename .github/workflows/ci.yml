@@ -30,10 +30,17 @@ jobs:
         run: npm run check
 
       - name: Run unit tests
-        run: npm test || true
+        run: npm test
 
       - name: Build package
         run: npm run build
+
+      - name: Smoke check built CLI help
+        run: |
+          node dist/cli/index.js
+          node dist/cli/index.js --help
+          node dist/cli/index.js hongguo --help
+          node dist/cli/index.js hongguo run --help
 
       - name: Verify publish payload
         run: npm pack --dry-run

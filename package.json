@@ -1,10 +1,18 @@
 {
-  "name": "codeh007-mtmauto",
+  "name": "mtmauto",
   "version": "0.0.2",
   "description": "CLI demo for running Midscene-based Android cloud-phone automation flows.",
   "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "bin": {
-    "mtm-auto": "dist/demo.js"
+    "mtmauto": "dist/cli/index.js"
   },
   "files": [
     "dist",
@@ -33,14 +41,15 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/demo.js",
-    "demo": "tsx src/demo.ts",
+    "start": "node dist/cli/index.js",
+    "demo": "tsx src/cli/index.ts hongguo run",
     "check": "tsc --noEmit -p tsconfig.json",
     "test": "tsx --test test/**/*.test.ts",
     "prepack": "npm run build"
   },
   "dependencies": {
     "@midscene/android": "^1.0.20",
+    "commander": "^13.1.0",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {

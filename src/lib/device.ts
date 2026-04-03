@@ -15,7 +15,7 @@ export interface ForegroundState {
 }
 
 export function logStep(message: string) {
-  console.log(`\n[mtm-auto] ${message}`);
+  console.log(`\n[mtmauto] ${message}`);
 }
 
 export function sleep(ms: number) {
