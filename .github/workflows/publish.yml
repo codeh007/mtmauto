@@ -1,0 +1,77 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: publish-main
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run check
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Build package
+        run: npm run build
+
+      - name: Resolve next version
+        id: version
+        run: node scripts/prepare-release-version.mjs
+
+      - name: Update package version files
+        run: npm version "${{ steps.version.outputs.next_version }}" --no-git-tag-version --allow-same-version
+
+      - name: Verify publish payload
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -n "${NPM_TOKEN}" ]; then
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --provenance --access public
+          else
+            npm publish --access public
+          fi
+
+      - name: Commit version bump and push tag
+        env:
+          VERSION: ${{ steps.version.outputs.next_version }}
+        run: |
+          if git diff --quiet -- package.json package-lock.json; then
+            git tag "v${VERSION}"
+            git push origin "v${VERSION}"
+            exit 0
+          fi
+
+          git add package.json package-lock.json
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(release): v${VERSION}"
+          git tag "v${VERSION}"
+          git push origin HEAD:main --follow-tags
