@@ -13,17 +13,54 @@ const defaultEnvFile = path.join(projectDir, '.env');
 const localEnvFile = path.join(projectDir, '.env.local');
 const legacyEnvFile = path.join(projectDir, 'env/dev.env');
 
-export const VMOS = {
-  sshUser: '10.1.147.39_1775128466919',
-  sshHost: '107.151.131.2',
-  sshPort: '1824',
-  sshPassword: 'YRfSin7EC5bEMlfbUQxNTs3+mz1Rek55drRtX1V0osq1polwW+iQAh8ZnnTfjTrTrgrJxwFVPizN2/Wi8PDzgg==',
-  localAdbPort: '7184',
-  remoteAdbHost: 'adb-proxy',
-  remoteAdbPort: '39427',
-} as const;
+export interface VmosConfig {
+  sshUser: string;
+  sshHost: string;
+  sshPort: string;
+  sshPassword: string;
+  localAdbPort: string;
+  remoteAdbHost: string;
+  remoteAdbPort: string;
+}
 
-export const DEMO_SERIAL = `localhost:${VMOS.localAdbPort}`;
+const requiredVmosEnvKeys = [
+  'VMOS_SSH_USER',
+  'VMOS_SSH_HOST',
+  'VMOS_SSH_PORT',
+  'VMOS_SSH_PASSWORD',
+  'VMOS_LOCAL_ADB_PORT',
+  'VMOS_REMOTE_ADB_HOST',
+  'VMOS_REMOTE_ADB_PORT',
+] as const;
+
+function readRequiredEnv(env: NodeJS.ProcessEnv, key: (typeof requiredVmosEnvKeys)[number]) {
+  const value = env[key]?.trim();
+  if (!value) {
+    throw new Error(`缺少云手机连接环境变量: ${key}`);
+  }
+
+  return value;
+}
+
+export function resolveVmosConfig(env: NodeJS.ProcessEnv): VmosConfig {
+  return {
+    sshUser: readRequiredEnv(env, 'VMOS_SSH_USER'),
+    sshHost: readRequiredEnv(env, 'VMOS_SSH_HOST'),
+    sshPort: readRequiredEnv(env, 'VMOS_SSH_PORT'),
+    sshPassword: readRequiredEnv(env, 'VMOS_SSH_PASSWORD'),
+    localAdbPort: readRequiredEnv(env, 'VMOS_LOCAL_ADB_PORT'),
+    remoteAdbHost: readRequiredEnv(env, 'VMOS_REMOTE_ADB_HOST'),
+    remoteAdbPort: readRequiredEnv(env, 'VMOS_REMOTE_ADB_PORT'),
+  };
+}
+
+export function getVmosConfig() {
+  return resolveVmosConfig(process.env);
+}
+
+export function getDemoSerial(config: VmosConfig = getVmosConfig()) {
+  return `localhost:${config.localAdbPort}`;
+}
 
 export const HONGGUO_DEMO = {
   appName: '红果免费短剧',
