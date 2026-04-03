@@ -11,9 +11,12 @@
     "README.md",
     ".env.example"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/codeh007/mtmauto.git"
+    "url": "git+https://github.com/codeh007/mtmauto.git"
   },
   "homepage": "https://github.com/codeh007/mtmauto#readme",
   "bugs": {
