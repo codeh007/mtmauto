@@ -1,6 +1,6 @@
 import { createAndroidAgent, ensureAdbReady, launchAndroidApp } from './lib/device.js';
-import { loadRuntimeEnv, HONGGUO_DEMO } from './lib/config.js';
-import { assertMidsceneEnv, runHongguoTaskFlow } from './lib/hongguo.js';
+import { loadRuntimeEnv } from './lib/config.js';
+import { assertMidsceneEnv, HONGGUO_DEMO, runHongguoTaskFlow } from './lib_apps/hongguo.js';
 
 export interface HongguoRuntimeOptions {
   cwd?: string;

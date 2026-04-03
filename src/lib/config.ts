@@ -52,26 +52,6 @@ export function getDemoSerial(config: VmosConfig = getVmosConfig()) {
   return `localhost:${config.localAdbPort}`;
 }
 
-export const HONGGUO_DEMO = {
-  appName: '红果免费短剧',
-  packageName: 'com.phoenix.read',
-  launchActivity: 'com.dragon.read.pages.splash.SplashActivity',
-  mainActivity: 'com.dragon.read.pages.main.MainFragmentActivity',
-  loginActivity: 'com.dragon.read.component.biz.impl.mine.LoginActivity',
-  rewardTabLabel: '赚钱',
-  homeKeywords: ['首页', '剧场', '商城', '赚钱', '我的'],
-  rewardPageKeywords: ['金币收益', '现金收益', '赚钱', '立即领取', '立即签到', '去看剧'],
-  primaryActionKeywords: ['立即签到', '立即领取', '去看剧'],
-  successKeywords: ['金币收益', '现金收益', '预约成功', '明日领取', '我知道了', '赚钱'],
-  loginKeywords: ['登录', '手机号', '验证码', '去登录', '立即登录'],
-  aiActionContext: [
-    '你正在操作红果免费短剧 App。',
-    '当前任务只需要完成最小真实自动化操作，不要做多余演示动作。',
-    '优先进入赚钱页，然后只执行一次最合适的任务动作：立即签到、立即领取，或者去看剧。',
-    '如果出现权限弹窗、登录弹窗、广告弹窗或升级提示，优先关闭、跳过或返回，不要尝试登录。',
-  ].join(' '),
-} as const;
-
 export interface RuntimeEnvLoadOptions {
   cwd?: string;
   envFile?: string;
