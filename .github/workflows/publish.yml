@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 concurrency:
   group: publish-main
@@ -11,7 +12,7 @@ concurrency:
 
 jobs:
   publish:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && vars.NPM_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
