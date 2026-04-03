@@ -10,7 +10,7 @@ mtm-auto - Midscene Android automation demo CLI
 
 Usage:
   mtm-auto
-  npx @codeh007/mtmauto
+  npx codeh007-mtmauto
 
 Required env vars:
   MIDSCENE_MODEL_API_KEY

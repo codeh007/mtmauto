@@ -1,4 +1,4 @@
-# @codeh007/mtmauto
+# codeh007-mtmauto
 
 用于快速验证 Midscene + Android 云手机自动化链路的最小独立演示项目。
 
@@ -15,14 +15,14 @@
 ### 使用 npm 安装
 
 ```bash
-npm install -g @codeh007/mtmauto
+npm install -g codeh007-mtmauto
 mtm-auto
 ```
 
 或直接执行：
 
 ```bash
-npx @codeh007/mtmauto
+npx codeh007-mtmauto
 ```
 
 ## 启动
@@ -87,7 +87,7 @@ VMOS_REMOTE_ADB_PORT=
 
 你需要由人类搭档在 npm 网站完成一次性配置：
 
-1. 确认 `@codeh007/mtmauto` 是你可控的 npm scope/package 名
+1. 确认 `codeh007-mtmauto` 是你最终要公开发布的 npm 包名
 2. 在 npm 包设置里把 trusted publisher 指向：
    - GitHub user/org: `codeh007`
    - Repository: `mtmauto`
