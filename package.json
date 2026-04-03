@@ -13,8 +13,8 @@
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
-    "@types/node": "catalog:",
+    "@types/node": "^22.19.15",
     "tsx": "4.21.0",
-    "typescript": "catalog:"
+    "typescript": "^6.0.2"
   }
 }

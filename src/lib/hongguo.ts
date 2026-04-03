@@ -24,7 +24,7 @@ export function assertMidsceneEnv() {
   const missingKeys = requiredKeys.filter((key) => !process.env[key]);
   if (missingKeys.length > 0) {
     throw new Error(
-      `缺少 Midscene 模型环境变量: ${missingKeys.join(', ')}。请确认 env/dev.env 中已经配置。`,
+      `缺少 Midscene 模型环境变量: ${missingKeys.join(', ')}。请确认已在项目根目录的 .env / .env.local（或兼容旧结构的 env/dev.env）中完成配置。`,
     );
   }
 }

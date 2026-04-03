@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -7,7 +8,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const projectDir = path.resolve(__dirname, '../..');
-export const repoRoot = path.resolve(projectDir, '../..');
+
+const defaultEnvFile = path.join(projectDir, '.env');
+const localEnvFile = path.join(projectDir, '.env.local');
+const legacyEnvFile = path.join(projectDir, 'env/dev.env');
 
 export const VMOS = {
   sshUser: '10.1.147.39_1775128466919',
@@ -42,6 +46,15 @@ export const HONGGUO_DEMO = {
 } as const;
 
 export function loadRuntimeEnv() {
-  loadDotenv({ path: path.join(repoRoot, 'env/dev.env') });
+  if (existsSync(defaultEnvFile)) {
+    loadDotenv({ path: defaultEnvFile });
+  } else if (existsSync(legacyEnvFile)) {
+    loadDotenv({ path: legacyEnvFile });
+  }
+
+  if (existsSync(localEnvFile)) {
+    loadDotenv({ path: localEnvFile, override: true });
+  }
+
   process.env.MIDSCENE_MODEL_FAMILY ||= 'gpt-5';
 }

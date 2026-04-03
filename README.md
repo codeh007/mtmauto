@@ -9,11 +9,18 @@
 在仓库根目录执行：
 
 ```bash
-bun run --cwd packages/mtm-auto demo
+npm install
+```
+
+然后参考 `.env.example` 在仓库根目录创建 `.env` 或 `.env.local`，补齐 Midscene 模型配置，再执行：
+
+```bash
+npm run demo
 ```
 
 脚本会自动：
 
+1. 读取项目根目录的 `.env` / `.env.local`（兼容 `env/dev.env`）
 2. 建立云手机 ADB SSH 隧道
 3. 连接 `adb`
 4. 拉起红果免费短剧
@@ -22,6 +29,8 @@ bun run --cwd packages/mtm-auto demo
 
 ## 说明
 
+- 这是独立项目，直接在当前仓库根目录安装依赖并运行，不再依赖旧 monorepo 的 `packages/mtm-auto` 路径。
 - 当前为了尽快完成演示，云手机连接信息和目标 App 信息直接写死在脚本里。
 - 入口脚本已经收敛为 `src/demo.ts`，公共逻辑位于 `src/lib/`。
 - 当前只保留红果免费短剧这个应用的一段最小任务流，不再包含 Android 设置页之类的通用演示动作。
+- 运行前请确认本机已安装并可直接调用 `adb` 与 `sshpass`。
