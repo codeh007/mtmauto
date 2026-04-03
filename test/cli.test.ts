@@ -1,7 +1,11 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, symlinkSync } from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type { Command } from 'commander';
-import { createCliProgram } from '../src/cli/index';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import { createCliProgram, isDirectCliInvocation } from '../src/cli/index';
 
 function hasLongOption(command: Command, optionName: string) {
   return command.options.some((option) => option.long === optionName);
@@ -48,4 +52,18 @@ test('createCliProgram supports version flag and exits through commander overrid
   );
 
   assert.match(output, /\d+\.\d+\.\d+/);
+});
+
+test('isDirectCliInvocation treats symlinked npm bin path as direct execution', () => {
+  const tempDir = mkdtempSync(path.join(os.tmpdir(), 'mtmauto-cli-bin-'));
+  const sourceCliPath = fileURLToPath(new URL('../src/cli/index.ts', import.meta.url));
+  const symlinkPath = path.join(tempDir, 'mtmauto');
+
+  try {
+    symlinkSync(sourceCliPath, symlinkPath);
+
+    assert.equal(isDirectCliInvocation(symlinkPath, pathToFileURL(sourceCliPath).href), true);
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
 });

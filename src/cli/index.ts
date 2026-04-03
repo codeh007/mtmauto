@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync } from 'node:fs';
+import { readFileSync, realpathSync } from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { fileURLToPath } from 'node:url';
@@ -64,9 +64,25 @@ export async function main(argv: string[] = process.argv.slice(2)) {
   await program.parseAsync(argv, { from: 'user' });
 }
 
-const currentFilePath = fileURLToPath(import.meta.url);
-const executedPath = process.argv[1] ? path.resolve(process.argv[1]) : '';
-if (executedPath === currentFilePath) {
+function resolveRealPath(filePath: string) {
+  return realpathSync(path.resolve(filePath));
+}
+
+export function isDirectCliInvocation(argvEntry = process.argv[1], moduleUrl = import.meta.url) {
+  if (!argvEntry) {
+    return false;
+  }
+
+  try {
+    const currentFilePath = resolveRealPath(fileURLToPath(moduleUrl));
+    const executedPath = resolveRealPath(argvEntry);
+    return executedPath === currentFilePath;
+  } catch {
+    return false;
+  }
+}
+
+if (isDirectCliInvocation()) {
   main().catch((error) => {
     console.error('\n[mtmauto] 运行失败');
     console.error(error instanceof Error ? error.stack : error);
