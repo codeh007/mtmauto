@@ -77,11 +77,11 @@ jobs:
 
       - name: Check for sensitive data in repository
         run: |
-          if grep -r "ghp_" . --include="*.yml" --include="*.yaml" --include="*.json" --include="*.ts" --include="*.js" 2>/dev/null; then
+          if grep -Er "ghp_[A-Za-z0-9]{20,}" . --include="*.yml" --include="*.yaml" --include="*.json" --include="*.ts" --include="*.js" 2>/dev/null; then
             echo "ERROR: Found potential GitHub token patterns in code"
             exit 1
           fi
-          if grep -r "npm_[a-zA-Z0-9]" . --include="*.yml" --include="*.yaml" --include="*.json" --include="*.ts" --include="*.js" 2>/dev/null; then
+          if grep -Er "npm_[A-Za-z0-9]{20,}" . --include="*.yml" --include="*.yaml" --include="*.json" --include="*.ts" --include="*.js" 2>/dev/null; then
             echo "ERROR: Found potential npm token patterns in code"
             exit 1
           fi
