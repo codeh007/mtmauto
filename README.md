@@ -1,4 +1,4 @@
-# @mattwin/mtmauto
+# @codeh007/mtmauto
 
 用于快速验证 Midscene + Android 云手机自动化链路的最小独立演示项目。
 
@@ -15,14 +15,14 @@
 ### 使用 npm 安装
 
 ```bash
-npm install -g @mattwin/mtmauto
+npm install -g @codeh007/mtmauto
 mtm-auto
 ```
 
 或直接执行：
 
 ```bash
-npx @mattwin/mtmauto
+npx @codeh007/mtmauto
 ```
 
 ## 启动
@@ -87,7 +87,7 @@ VMOS_REMOTE_ADB_PORT=
 
 你需要由人类搭档在 npm 网站完成一次性配置：
 
-1. 确认 `@mattwin/mtmauto` 是你最终要公开发布的 npm 包名
+1. 确认 `@codeh007/mtmauto` 是你最终要公开发布的 npm 包名
 2. 在 npm 包设置里把 trusted publisher 指向：
    - GitHub user/org: `codeh007`
    - Repository: `mtmauto`
@@ -97,6 +97,19 @@ VMOS_REMOTE_ADB_PORT=
 ### 兼容方案：NPM_TOKEN
 
 如果你暂时还没完成 trusted publishing，也可以在 GitHub 仓库里配置 `NPM_TOKEN` secret，workflow 会自动优先使用它来发布。
+
+### 发布开关
+
+为了避免在 npm 首发权限尚未就绪时让 `main` 分支持续报红，`publish.yml` 现在额外受仓库变量 `NPM_PUBLISH_ENABLED` 控制：
+
+- 未设置或不等于 `true`：`Publish` job 会自动跳过
+- 设置为 `true`：后续 `main` 分支 push 会自动进入发布流程
+
+建议顺序：
+
+1. 由 npm 账号持有人准备好可首发 `@codeh007/mtmauto` 的凭据，或先完成一次人工首发
+2. 在 GitHub 仓库变量中设置 `NPM_PUBLISH_ENABLED=true`
+3. 之后主分支每次版本变更/代码更新都会自动发布
 
 ### 自动版本策略
 
