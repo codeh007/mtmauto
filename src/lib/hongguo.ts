@@ -1,6 +1,6 @@
 import type { AndroidAgent } from '@midscene/android';
-import { HONGGUO_DEMO } from './config';
-import { logStep, readForegroundState, sleep } from './device';
+import { HONGGUO_DEMO } from './config.js';
+import { logStep, readForegroundState, sleep } from './device.js';
 
 type DemoOutcome = 'demo_ok' | 'blocked_by_login' | 'unknown_reward_state';
 
