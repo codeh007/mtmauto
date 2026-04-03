@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import process from 'node:process';
 import { AndroidAgent, AndroidDevice, getConnectedDevices } from '@midscene/android';
-import { DEMO_SERIAL, VMOS } from './config';
+import { getDemoSerial, getVmosConfig } from './config.js';
 
 export interface CommandResult {
   code: number | null;
@@ -68,12 +68,14 @@ export function runCommand(
 }
 
 export async function tryAdbConnect() {
-  const result = await runCommand('adb', ['connect', DEMO_SERIAL], { allowFailure: true });
+  const demoSerial = getDemoSerial();
+  const result = await runCommand('adb', ['connect', demoSerial], { allowFailure: true });
   const combined = `${result.stdout}\n${result.stderr}`;
   return /connected to|already connected to/i.test(combined);
 }
 
 export async function ensureSshTunnel() {
+  const vmos = getVmosConfig();
   logStep('尝试建立云手机 SSH 隧道');
   const result = await runCommand(
     'sshpass',
@@ -90,17 +92,17 @@ export async function ensureSshTunnel() {
       'ServerAliveInterval=30',
       '-o',
       'ServerAliveCountMax=3',
-      `${VMOS.sshUser}@${VMOS.sshHost}`,
+      `${vmos.sshUser}@${vmos.sshHost}`,
       '-p',
-      VMOS.sshPort,
+      vmos.sshPort,
       '-L',
-      `${VMOS.localAdbPort}:${VMOS.remoteAdbHost}:${VMOS.remoteAdbPort}`,
+      `${vmos.localAdbPort}:${vmos.remoteAdbHost}:${vmos.remoteAdbPort}`,
       '-Nf',
     ],
     {
       allowFailure: true,
       env: {
-        SSHPASS: VMOS.sshPassword,
+        SSHPASS: vmos.sshPassword,
       },
     },
   );
@@ -114,6 +116,7 @@ export async function ensureSshTunnel() {
 }
 
 export async function ensureAdbReady() {
+  const demoSerial = getDemoSerial();
   logStep('检查 adb 连接');
   if (await tryAdbConnect()) {
     return;
@@ -123,24 +126,26 @@ export async function ensureAdbReady() {
   await sleep(2_000);
 
   if (!(await tryAdbConnect())) {
-    throw new Error(`无法连接 adb 设备 ${DEMO_SERIAL}`);
+    throw new Error(`无法连接 adb 设备 ${demoSerial}`);
   }
 
   const devices = await runCommand('adb', ['devices']);
-  if (!devices.stdout.includes(DEMO_SERIAL)) {
-    throw new Error(`adb devices 中未发现目标设备 ${DEMO_SERIAL}`);
+  if (!devices.stdout.includes(demoSerial)) {
+    throw new Error(`adb devices 中未发现目标设备 ${demoSerial}`);
   }
 }
 
 export async function launchAndroidApp(packageName: string, activityName: string) {
+  const demoSerial = getDemoSerial();
   logStep(`启动 ${packageName}/${activityName}`);
-  await runCommand('adb', ['-s', DEMO_SERIAL, 'shell', 'am', 'start', '-W', '-S', '-n', `${packageName}/${activityName}`]);
+  await runCommand('adb', ['-s', demoSerial, 'shell', 'am', 'start', '-W', '-S', '-n', `${packageName}/${activityName}`]);
   await sleep(5_000);
 }
 
 export async function createAndroidAgent(aiActionContext: string) {
+  const demoSerial = getDemoSerial();
   const devices = await getConnectedDevices();
-  const selectedDevice = devices.find((device) => device.udid.includes(DEMO_SERIAL)) ?? devices[0];
+  const selectedDevice = devices.find((device) => device.udid.includes(demoSerial)) ?? devices[0];
 
   if (!selectedDevice) {
     throw new Error('Midscene 未发现任何 Android 设备，请先确认 adb connect 是否成功');
@@ -181,6 +186,7 @@ export function parseForegroundState(output: string): ForegroundState {
 }
 
 export async function readForegroundState() {
-  const result = await runCommand('adb', ['-s', DEMO_SERIAL, 'shell', 'dumpsys', 'activity', 'activities']);
+  const demoSerial = getDemoSerial();
+  const result = await runCommand('adb', ['-s', demoSerial, 'shell', 'dumpsys', 'activity', 'activities']);
   return parseForegroundState(result.stdout);
 }
