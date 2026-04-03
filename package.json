@@ -1,0 +1,20 @@
+{
+  "name": "mtm-auto",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx src/demo.ts",
+    "demo": "tsx src/demo.ts",
+    "check": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@midscene/android": "^1.0.20",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "4.21.0",
+    "typescript": "catalog:"
+  }
+}
