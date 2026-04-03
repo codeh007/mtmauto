@@ -5,11 +5,6 @@ on:
     branches:
       - main
   workflow_dispatch:
-    inputs:
-      version_bump:
-        description: 'Version bump type (patch/minor/major)'
-        required: false
-        default: 'patch'
 
 concurrency:
   group: publish-main
@@ -50,8 +45,18 @@ jobs:
       - name: Type check
         run: npm run check
 
+      - name: Run unit tests
+        run: npm test
+
       - name: Build package
         run: npm run build
+
+      - name: Smoke check built CLI help
+        run: |
+          node dist/cli/index.js
+          node dist/cli/index.js --help
+          node dist/cli/index.js hongguo --help
+          node dist/cli/index.js hongguo run --help
 
       - name: Resolve next version
         id: version
@@ -71,19 +76,32 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          if npm publish --provenance --access public; then
+          if npm publish --provenance; then
             echo "Published with trusted publishing (OIDC)."
             exit 0
           fi
 
           if [ -n "${NPM_TOKEN}" ]; then
             echo "Trusted publishing failed; using NPM_TOKEN fallback."
-            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --provenance --access public
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --provenance
             exit 0
           fi
 
           echo "ERROR: Trusted publishing failed and NPM_TOKEN is not configured"
           exit 1
+
+      - name: Commit version bump and push
+        if: success()
+        env:
+          VERSION: ${{ steps.version.outputs.next_version }}
+        run: |
+          git add package.json package-lock.json
+          if git diff --cached --quiet; then
+            echo "No version file changes to commit."
+          else
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(release): v${VERSION}"
+            git push origin HEAD:main
+          fi
 
       - name: Create GitHub Release
         if: success()
@@ -94,6 +112,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               tag_name: `v${process.env.VERSION}`,
+              target_commitish: 'main',
               name: `v${process.env.VERSION}`,
               draft: false,
               generate_release_notes: true
@@ -101,15 +120,6 @@ jobs:
             console.log('Created release:', data.html_url);
         env:
           VERSION: ${{ steps.version.outputs.next_version }}
-
-      - name: Commit version bump and push
-        if: success()
-        env:
-          VERSION: ${{ steps.version.outputs.next_version }}
-        run: |
-          git add package.json package-lock.json
-          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(release): v${VERSION}"
-          git push origin HEAD:main
 
   publish-preview:
     if: github.actor != 'github-actions[bot]' && vars.NPM_PUBLISH_ENABLED != 'true' && github.event_name == 'workflow_dispatch'
@@ -134,20 +144,32 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Type check
+        run: npm run check
+
+      - name: Run unit tests
+        run: npm test
+
       - name: Build package
         run: npm run build
+
+      - name: Smoke check built CLI help
+        run: |
+          node dist/cli/index.js
+          node dist/cli/index.js --help
+          node dist/cli/index.js hongguo --help
+          node dist/cli/index.js hongguo run --help
 
       - name: Publish to npm (preview)
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -n "${NPM_TOKEN}" ]; then
-            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --tag preview --access public
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --tag preview
           else
             echo "ERROR: NPM_TOKEN not configured"
             exit 1
           fi
-        continue-on-error: true
 
       - name: Notice
         if: vars.NPM_PUBLISH_ENABLED != 'true'
