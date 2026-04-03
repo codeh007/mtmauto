@@ -1,12 +1,44 @@
 {
-  "name": "mtm-auto",
+  "name": "@codeh007/mtmauto",
   "version": "0.0.1",
-  "private": true,
+  "description": "CLI demo for running Midscene-based Android cloud-phone automation flows.",
   "type": "module",
+  "bin": {
+    "mtm-auto": "dist/demo.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    ".env.example"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codeh007/mtmauto.git"
+  },
+  "homepage": "https://github.com/codeh007/mtmauto#readme",
+  "bugs": {
+    "url": "https://github.com/codeh007/mtmauto/issues"
+  },
+  "keywords": [
+    "midscene",
+    "android",
+    "automation",
+    "cloud-phone",
+    "cli"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "start": "tsx src/demo.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/demo.js",
     "demo": "tsx src/demo.ts",
-    "check": "tsc --noEmit -p tsconfig.json"
+    "check": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx --test test/**/*.test.ts",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@midscene/android": "^1.0.20",
