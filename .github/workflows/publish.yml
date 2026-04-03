@@ -56,9 +56,9 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -n "${NPM_TOKEN}" ]; then
-            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --provenance --access public
+            NODE_AUTH_TOKEN="${NPM_TOKEN}" npm publish --provenance
           else
-            npm publish --access public
+            npm publish
           fi
 
       - name: Commit version bump and push tag
