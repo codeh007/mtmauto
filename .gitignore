@@ -25,6 +25,7 @@ cache.db
 supabase/.temp/
 **/.temp/**
 **/midscene_run/**
+TODO.md
 
 # testing
 .browser_screenshots/
